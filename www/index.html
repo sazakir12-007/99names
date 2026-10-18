@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Asma ul-Husna · 99 Names</title>
+  <meta name="description" content="The 99 Beautiful Names of Allah with meanings, benefits of recitation, categories, themes and auto scroll.">
+  <meta name="theme-color" content="#0f6b4f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="99 Names">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preload" href="fonts/amiri-arabic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/app.css">
+  <script>
+    // Apply saved theme before first paint to avoid a flash.
+    try {
+      var s = JSON.parse(localStorage.getItem("99names.settings") || "{}");
+      if (s.theme) document.documentElement.dataset.theme = s.theme;
+    } catch (e) {}
+  </script>
+</head>
+<body class="show-meaning">
+  <div id="app">
+    <header class="appbar">
+      <div class="brand">
+        <span class="brand-ar" lang="ar" dir="rtl">الأسماء الحسنى</span>
+        <span class="brand-en">99 Names of Allah</span>
+      </div>
+      <button class="mode-pill" id="btnMode" aria-label="Change what is shown">
+        <span id="modeLabel">Meaning</span>
+      </button>
+      <button class="icon-btn" id="btnSearch" aria-label="Search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <button class="icon-btn" id="btnSettings" aria-label="Settings">
+        <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+      </button>
+    </header>
+
+    <div class="searchbar" id="searchbar" hidden>
+      <input type="search" id="searchInput" placeholder="Search name, meaning or Arabic…" autocomplete="off" enterkeyhint="search">
+      <button class="text-btn" id="btnSearchClose">Cancel</button>
+    </div>
+
+    <nav class="chips" id="chips" aria-label="Categories"></nav>
+
+    <main id="content" class="content" tabindex="-1"></main>
+
+    <div class="cards-nav" id="cardsNav" hidden>
+      <button class="icon-btn" id="btnPrev" aria-label="Previous name">
+        <svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg>
+      </button>
+      <span id="cardCounter">1 / 99</span>
+      <button class="icon-btn" id="btnNext" aria-label="Next name">
+        <svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <button class="fab" id="btnPlay" aria-label="Start auto scroll">
+      <svg class="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <svg class="i-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+    </button>
+
+    <nav class="tabbar" id="tabbar" aria-label="Layout">
+      <button data-layout="list">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>List</span>
+      </button>
+      <button data-layout="grid">
+        <svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg><span>Grid</span>
+      </button>
+      <button data-layout="cards">
+        <svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M3 6v12M21 6v12"/></svg><span>Cards</span>
+      </button>
+      <button data-layout="recite">
+        <svg viewBox="0 0 24 24"><path d="M4 4h6v6M20 4h-6v6M4 20h6v-6M20 20h-6v-6"/></svg><span>Recite</span>
+      </button>
+      <button id="btnAbout">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span>About</span>
+      </button>
+    </nav>
+
+    <!-- Floating controls shown in Recite (fullscreen) layout -->
+    <div class="recite-bar" id="reciteBar">
+      <button class="icon-btn" id="btnExitRecite" aria-label="Exit recitation">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <button class="icon-btn" id="btnSlower" aria-label="Slower">
+        <svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
+      </button>
+      <span id="speedLabel">40</span>
+      <button class="icon-btn" id="btnFaster" aria-label="Faster">
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg>
+      </button>
+      <button class="icon-btn" id="btnRecitePlay" aria-label="Play or pause">
+        <svg class="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg class="i-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- Detail sheet -->
+  <section class="sheet" id="detailSheet" role="dialog" aria-modal="true" aria-label="Name details" hidden>
+    <div class="sheet-handle"></div>
+    <div class="sheet-body" id="detailBody"></div>
+  </section>
+
+  <!-- Settings sheet -->
+  <section class="sheet" id="settingsSheet" role="dialog" aria-modal="true" aria-label="Settings" hidden>
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <h2>Settings</h2>
+      <button class="text-btn" data-close>Done</button>
+    </div>
+    <div class="sheet-body">
+      <h3>Show</h3>
+      <div class="segmented" data-setting="display">
+        <button data-value="name">Name only</button>
+        <button data-value="meaning">+ Meaning</button>
+        <button data-value="benefit">+ Benefits</button>
+      </div>
+      <label class="row"><span>Arabic script</span><input type="checkbox" class="switch" data-setting="showArabic"></label>
+      <label class="row"><span>Transliteration</span><input type="checkbox" class="switch" data-setting="showTranslit"></label>
+      <label class="row"><span>Number</span><input type="checkbox" class="switch" data-setting="showNumber"></label>
+      <label class="row"><span>Category tag</span><input type="checkbox" class="switch" data-setting="showTag"></label>
+
+      <h3>Classification</h3>
+      <div class="segmented" data-setting="scheme">
+        <button data-value="theme">Thematic</button>
+        <button data-value="jjk">Jalal · Jamal · Kamal</button>
+      </div>
+      <label class="row"><span>Group into sections</span><input type="checkbox" class="switch" data-setting="grouped"></label>
+
+      <h3>Theme</h3>
+      <div class="swatches" id="themeSwatches"></div>
+
+      <h3>Arabic font</h3>
+      <div class="font-picker" id="arFontPicker"></div>
+      <label class="row slider"><span>Arabic size</span><input type="range" min="0.7" max="2" step="0.05" data-setting="arScale"></label>
+
+      <h3>Text font</h3>
+      <div class="segmented" data-setting="txFont">
+        <button data-value="sans">Sans</button>
+        <button data-value="serif">Serif</button>
+        <button data-value="system">System</button>
+      </div>
+      <label class="row slider"><span>Text size</span><input type="range" min="0.8" max="1.5" step="0.05" data-setting="txScale"></label>
+
+      <h3>Auto scroll</h3>
+      <label class="row slider"><span>Scroll speed <output id="outSpeed"></output></span><input type="range" min="10" max="200" step="5" data-setting="speed"></label>
+      <label class="row slider"><span>Card interval <output id="outInterval"></output></span><input type="range" min="2" max="30" step="1" data-setting="interval"></label>
+      <label class="row"><span>Loop at the end</span><input type="checkbox" class="switch" data-setting="loop"></label>
+      <label class="row"><span>Keep screen awake while playing</span><input type="checkbox" class="switch" data-setting="wakeLock"></label>
+
+      <button class="danger-btn" id="btnReset">Reset all settings</button>
+    </div>
+  </section>
+
+  <!-- About sheet -->
+  <section class="sheet" id="aboutSheet" role="dialog" aria-modal="true" aria-label="About" hidden>
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <h2>About</h2>
+      <button class="text-btn" data-close>Done</button>
+    </div>
+    <div class="sheet-body prose">
+      <p class="ayah" lang="ar" dir="rtl">وَلِلَّهِ الْأَسْمَاءُ الْحُسْنَىٰ فَادْعُوهُ بِهَا</p>
+      <p class="ayah-en">“To Allah belong the most beautiful names, so call upon Him by them.” (al-A'raf 7:180)</p>
+      <p>The Prophet ﷺ said: “Allah has ninety-nine names, one hundred less one. Whoever preserves them will enter Paradise.” (al-Bukhari, Muslim)</p>
+      <h3>About the benefits</h3>
+      <p>The benefits of recitation listed in this app come from traditional devotional literature passed down by scholars and teachers. Except where a hadith is cited, they are not established by authentic hadith. Recite with sincerity, and ask a qualified scholar for guidance.</p>
+      <h3>About the classifications</h3>
+      <p>The thematic categories group names by meaning to help with reflection. The Jalal (majesty), Jamal (beauty) and Kamal (perfection) grouping follows a traditional approach; scholars differ on where some names belong.</p>
+      <p class="muted">Fonts: Amiri, Scheherazade New, Noto Naskh Arabic, Lateef, Reem Kufi, Aref Ruqaa, Inter and Lora, all under the SIL Open Font License.</p>
+    </div>
+  </section>
+
+  <script src="js/names.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
