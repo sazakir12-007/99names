@@ -1,0 +1,8 @@
+{
+  "appId": "com.ninetyninenames.app",
+  "appName": "99 Names",
+  "webDir": "www",
+  "backgroundColor": "#f6f2e9",
+  "android": { "allowMixedContent": false },
+  "ios": { "contentInset": "never" }
+}
