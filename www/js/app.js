@@ -10,7 +10,7 @@
     showArabic: true, showTranslit: true, showNumber: true, showTag: false,
     scheme: "theme", grouped: false, filter: "all",
     arFont: "Amiri", txFont: "sans", arScale: 1, txScale: 1,
-    speed: 40, interval: 6, loop: true, wakeLock: true
+    speed: 40, interval: 6, wakeLock: true
   };
   var LAYOUTS = ["list", "grid", "cards"];
 
@@ -56,6 +56,8 @@
   // Migrate values from earlier versions (Recite layout and "benefit" display were removed).
   if (LAYOUTS.indexOf(settings.layout) === -1) settings.layout = "list";
   if (settings.display === "benefit") settings.display = "details";
+  // Category chips are hidden while categories are off, so no category filter can apply.
+  if (!settings.showTag) settings.filter = "all";
   var favs = new Set(load(FAVS_KEY, []));
   var query = "";
   var cardIndex = 0;
@@ -266,7 +268,7 @@
     var t = track();
     if (!t) return;
     var count = cardCount();
-    if (i >= count) i = settings.loop ? 0 : count - 1;
+    if (i >= count) i = 0;
     if (i < 0) i = 0;
     cardIndex = i;
     t.scrollTo({ left: i * t.clientWidth, behavior: smooth === false ? "auto" : "smooth" });
@@ -281,10 +283,7 @@
     playing = true;
     body.classList.add("playing");
     if (settings.layout === "cards") {
-      cardTimer = setInterval(function () {
-        if (!settings.loop && cardIndex >= cardCount() - 1) return stopPlay();
-        goCard(cardIndex + 1);
-      }, settings.interval * 1000);
+      cardTimer = setInterval(function () { goCard(cardIndex + 1); }, settings.interval * 1000);
     } else {
       pos = content.scrollTop;
       lastT = null;
@@ -312,10 +311,7 @@
       var dt = Math.min((t - lastT) / 1000, 0.1);
       var max = content.scrollHeight - content.clientHeight;
       pos += settings.speed * dt;
-      if (pos >= max) {
-        if (settings.loop) { pos = 0; }
-        else { content.scrollTop = max; stopPlay(); return; }
-      }
+      if (pos >= max) pos = 0;   // start again from the top
       content.scrollTop = pos;
     }
     lastT = t;
@@ -431,7 +427,7 @@
     // Never hide both the Arabic and the transliteration.
     if (key === "showArabic" && !value && !settings.showTranslit) settings.showTranslit = true;
     if (key === "showTranslit" && !value && !settings.showArabic) settings.showArabic = true;
-    if (key === "scheme") { settings.filter = "all"; renderChips(); }
+    if (key === "scheme" || (key === "showTag" && !value)) { settings.filter = "all"; renderChips(); }
     persist();
     applyAppearance();
     if (RERENDER[key]) render();
