@@ -4,6 +4,7 @@
   var NAMES = window.NAMES, THEMES = window.THEMES, JJK = window.JJK, INFO = window.INFO;
   var SETTINGS_KEY = "99names.settings";
   var FAVS_KEY = "99names.favs";
+  var APP_URL = "https://sazakir12-007.github.io/99names/";
 
   var DEFAULTS = {
     theme: "auto", layout: "list", display: "meaning",
@@ -220,6 +221,7 @@
         '<p class="ayah" lang="ar" dir="rtl">وَلِلَّهِ الْأَسْمَاءُ الْحُسْنَىٰ فَادْعُوهُ بِهَا</p>' +
         '<p class="ayah-en">“To Allah belong the best names, so call upon Him by them.” (al-A\'raf 7:180)</p>' +
         "<h2>" + esc(INFO.title) + "</h2>" +
+        '<button class="share-app" id="btnShareApp"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>Share this app</button>' +
         "<h3>Virtue of the names</h3>" +
         INFO.collection_benefits.map(function (b) {
           return '<blockquote>' + esc(b.text) + "<cite>" + esc(b.source) + "</cite></blockquote>";
@@ -574,13 +576,21 @@
     if (act === "share") shareName(NAMES[detailN - 1]);
   });
 
-  function shareName(n) {
-    var text = n.ar + "\n" + n.tr + " — " + n.en + "\n\n" + n.desc;
+  function share(data) {
     if (navigator.share) {
-      navigator.share({ title: n.tr, text: text }).catch(function () {});
+      navigator.share(data).catch(function () {});
     } else if (navigator.clipboard) {
+      var text = data.url ? data.text + "\n" + data.url : data.text;
       navigator.clipboard.writeText(text).then(function () { toast("Copied to clipboard"); }, function () {});
     }
+  }
+
+  function shareName(n) {
+    share({ title: n.tr, text: n.ar + "\n" + n.tr + " — " + n.en + "\n\n" + n.desc });
+  }
+
+  function shareApp() {
+    share({ title: "Asma ul Husna", text: "Asma ul Husna: the 99 Beautiful Names of Allah with meanings and explanations.", url: APP_URL });
   }
 
   // ---------- Favourites ----------
@@ -619,6 +629,7 @@
   content.addEventListener("click", function (e) {
     var fav = e.target.closest(".fav");
     if (fav) { toggleFav(+fav.dataset.fav); return; }
+    if (e.target.closest("#btnShareApp")) { shareApp(); return; }
     if (view !== "names" || settings.layout === "cards") return;
     var item = e.target.closest(".name");
     if (item) openDetail(+item.dataset.n);
