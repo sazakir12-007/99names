@@ -7,7 +7,7 @@
     "serve": "npx --yes http-server www -p 8080 -c-1",
     "android": "cap add android && npm run icons && cap sync android",
     "ios": "cap add ios && npm run icons && cap sync ios",
-    "icons": "capacitor-assets generate --android --ios --iconBackgroundColor '#0f6b4f' --splashBackgroundColor '#0f6b4f'",
+    "icons": "capacitor-assets generate --android --ios --iconBackgroundColor '#1b1e28' --splashBackgroundColor '#1b1e28'",
     "sync": "cap sync",
     "open:android": "cap open android",
     "open:ios": "cap open ios"
