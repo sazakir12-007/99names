@@ -1,8 +1,12 @@
 {
   "appId": "com.ninetyninenames.app",
-  "appName": "99 Names",
+  "appName": "Asma ul Husna",
   "webDir": "www",
   "backgroundColor": "#f6f2e9",
-  "android": { "allowMixedContent": false },
-  "ios": { "contentInset": "never" }
+  "android": {
+    "allowMixedContent": false
+  },
+  "ios": {
+    "contentInset": "never"
+  }
 }
