@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var NAMES = window.NAMES, THEMES = window.THEMES, JJK = window.JJK;
+  var NAMES = window.NAMES, THEMES = window.THEMES, JJK = window.JJK, INFO = window.INFO;
   var SETTINGS_KEY = "99names.settings";
   var FAVS_KEY = "99names.favs";
 
@@ -12,6 +12,7 @@
     arFont: "Amiri", txFont: "sans", arScale: 1, txScale: 1,
     speed: 40, interval: 6, loop: true, wakeLock: true
   };
+  var LAYOUTS = ["list", "grid", "cards"];
 
   var THEME_LIST = [
     { id: "auto",     label: "Auto",     bg: "linear-gradient(135deg,#f6f2e9 50%,#0f1416 50%)", accent: "#0f6b4f" },
@@ -40,9 +41,6 @@
     system: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif'
   };
 
-  var DISPLAY_ORDER = ["name", "meaning", "benefit"];
-  var DISPLAY_LABEL = { name: "Name", meaning: "Meaning", benefit: "Benefits" };
-
   var HEART = '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-9.2-9A5 5 0 0 1 12 5.6 5 5 0 0 1 21.2 11C19 15.6 12 20 12 20z"/></svg>';
 
   // ---------- Storage ----------
@@ -55,10 +53,13 @@
   }
 
   var settings = Object.assign({}, DEFAULTS, load(SETTINGS_KEY, {}));
-  if (settings.layout === "recite") settings.layout = "list";
+  // Migrate values from earlier versions (Recite layout and "benefit" display were removed).
+  if (LAYOUTS.indexOf(settings.layout) === -1) settings.layout = "list";
+  if (settings.display === "benefit") settings.display = "details";
   var favs = new Set(load(FAVS_KEY, []));
   var query = "";
   var cardIndex = 0;
+  var view = "names";   // "names" or "about"
 
   function persist() { save(SETTINGS_KEY, settings); }
 
@@ -72,7 +73,7 @@
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
-    });
+    }).replace(/ﷺ/g, '<span lang="ar">ﷺ</span>');   // Latin fonts lack this glyph
   }
 
   // ---------- Classification & filtering ----------
@@ -134,12 +135,32 @@
     return '<button class="fav' + (favs.has(n.n) ? " on" : "") + '" data-fav="' + n.n + '" aria-label="Favourite">' + HEART + "</button>";
   }
 
+  function quranLink(ref) {
+    var parts = ref.split(":");
+    return '<a href="https://quran.com/' + esc(parts[0]) + "/" + esc(parts[1]) + '" target="_blank" rel="noopener">' + esc(ref) + "</a>";
+  }
+
+  function benefitsHTML(n) {
+    return n.benefits.map(function (b) {
+      return '<p class="benefit">' + esc(b.text) + ' <cite>' + esc(b.source) + "</cite></p>";
+    }).join("");
+  }
+
+  // Description, authentic benefits and Qur'an references, shown in "+ Details" mode.
+  function detailsHTML(n) {
+    return '<div class="details">' +
+      '<p class="desc">' + esc(n.desc) + "</p>" +
+      benefitsHTML(n) +
+      (n.refs.length ? '<div class="refs">Qur\'an ' + n.refs.map(esc).join(", ") + "</div>" : "") +
+      "</div>";
+  }
+
   function itemHTML(n) {
     return '<article class="name" data-n="' + n.n + '">' +
       '<span class="num"><span>' + n.n + "</span></span>" +
       '<div class="meta"><div class="tr">' + esc(n.tr) + '</div><div class="en">' + esc(n.en) + "</div></div>" +
       '<div class="ar" lang="ar">' + n.ar + "</div>" +
-      '<p class="benefit">' + esc(n.benefit) + "</p>" +
+      detailsHTML(n) +
       '<span class="tag">' + esc(tagLabel(n)) + "</span>" +
       favBtn(n) + "</article>";
   }
@@ -151,21 +172,13 @@
       '<div class="ornament">۞</div>' +
       '<div class="tr">' + esc(n.tr) + "</div>" +
       '<div class="en">' + esc(n.en) + "</div>" +
-      '<p class="benefit">' + esc(n.benefit) + "</p>" +
+      detailsHTML(n) +
       '<span class="tag">' + esc(tagLabel(n)) + "</span>" +
       favBtn(n) + "</article></div>";
   }
 
-  function reciteHTML(n) {
-    return '<div class="r-item" data-n="' + n.n + '">' +
-      '<div class="num">' + n.n + "</div>" +
-      '<div class="ar" lang="ar">' + n.ar + "</div>" +
-      '<div class="tr">' + esc(n.tr) + "</div>" +
-      '<div class="en">' + esc(n.en) + "</div>" +
-      '<p class="benefit">' + esc(n.benefit) + "</p></div>";
-  }
-
   function render() {
+    if (view === "about") return renderAbout();
     var list = visibleNames();
     var layout = settings.layout;
     content.className = "content layout-" + layout;
@@ -181,33 +194,43 @@
     var groups = grouped(list);
     var html = "";
 
-    if (layout === "list") {
-      groups.forEach(function (g) {
-        if (g.key) html += sectionTitle(g.key);
-        html += g.items.map(itemHTML).join("");
-      });
-    } else if (layout === "grid") {
-      html = '<div class="grid">';
-      groups.forEach(function (g) {
-        if (g.key) html += sectionTitle(g.key);
-        html += g.items.map(itemHTML).join("");
-      });
-      html += "</div>";
-    } else if (layout === "cards") {
+    if (layout === "cards") {
       var ordered = [];
       groups.forEach(function (g) { ordered = ordered.concat(g.items); });
       html = '<div class="track" id="track">' + ordered.map(cardHTML).join("") + "</div>";
     } else {
-      html = '<div class="spacer"></div>';
       groups.forEach(function (g) {
         if (g.key) html += sectionTitle(g.key);
-        html += g.items.map(reciteHTML).join('<div class="r-sep">۞</div>');
+        html += g.items.map(itemHTML).join("");
       });
-      html += '<div class="spacer"></div>';
+      if (layout === "grid") html = '<div class="grid">' + html + "</div>";
     }
     content.innerHTML = html;
 
     if (layout === "cards") setupCards();
+  }
+
+  function renderAbout() {
+    content.className = "content about";
+    $("cardsNav").hidden = true;
+    content.innerHTML =
+      '<div class="prose">' +
+        '<p class="ayah" lang="ar" dir="rtl">وَلِلَّهِ الْأَسْمَاءُ الْحُسْنَىٰ فَادْعُوهُ بِهَا</p>' +
+        '<p class="ayah-en">“To Allah belong the best names, so call upon Him by them.” (al-A\'raf 7:180)</p>' +
+        "<h2>" + esc(INFO.title) + "</h2>" +
+        "<h3>Virtue of the names</h3>" +
+        INFO.collection_benefits.map(function (b) {
+          return '<blockquote>' + esc(b.text) + "<cite>" + esc(b.source) + "</cite></blockquote>";
+        }).join("") +
+        "<h3>Sources</h3>" +
+        "<p>" + esc(INFO.list_source) + ".</p>" +
+        "<p>" + esc(INFO.verification_note) + "</p>" +
+        "<h3>Classifications</h3>" +
+        "<p>The thematic categories group names by meaning to help with reflection. The Jalal (majesty), Jamal (beauty) and Kamal (perfection) grouping follows a traditional approach; scholars differ on where some names belong.</p>" +
+        "<h3>Using the app</h3>" +
+        "<p>Switch between List, Grid and Cards below. Use ▶ to auto scroll (or auto advance cards). Tap a name for full details. Settings let you choose what is shown, the classification, theme, fonts and scroll speed.</p>" +
+        '<p class="muted">Fonts: Amiri, Scheherazade New, Noto Naskh Arabic, Lateef, Reem Kufi, Aref Ruqaa, Inter and Lora, all under the SIL Open Font License.</p>' +
+      "</div>";
   }
 
   // Names in on-screen order (respecting grouping), used for detail navigation.
@@ -254,7 +277,7 @@
   var playing = false, rafId = 0, lastT = null, pos = 0, touching = false, cardTimer = 0, wakeLock = null;
 
   function startPlay() {
-    if (playing) return;
+    if (playing || view !== "names") return;
     playing = true;
     body.classList.add("playing");
     if (settings.layout === "cards") {
@@ -277,7 +300,6 @@
     cancelAnimationFrame(rafId);
     clearInterval(cardTimer);
     releaseWakeLock();
-    showReciteControls();
   }
 
   function togglePlay() { playing ? stopPlay() : startPlay(); }
@@ -322,16 +344,6 @@
 
   function speedText() { return (settings.speed / 40).toFixed(2).replace(/0$/, "") + "×"; }
 
-  // ---------- Recite controls ----------
-  var hideTimer = 0;
-  function showReciteControls() {
-    body.classList.remove("controls-hidden");
-    clearTimeout(hideTimer);
-    if (settings.layout === "recite" && playing) {
-      hideTimer = setTimeout(function () { body.classList.add("controls-hidden"); }, 3000);
-    }
-  }
-
   // ---------- Applying settings ----------
   var darkMQ = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
 
@@ -352,45 +364,40 @@
     root.style.setProperty("--tx-scale", settings.txScale);
 
     body.classList.toggle("show-meaning", settings.display !== "name");
-    body.classList.toggle("show-benefit", settings.display === "benefit");
+    body.classList.toggle("show-details", settings.display === "details");
     body.classList.toggle("hide-ar", !settings.showArabic);
     body.classList.toggle("hide-tr", !settings.showTranslit);
     body.classList.toggle("hide-num", !settings.showNumber);
     body.classList.toggle("show-tag", settings.showTag);
-    ["list", "grid", "cards", "recite"].forEach(function (l) {
-      body.classList.toggle("layout-" + l, settings.layout === l);
-    });
+    body.classList.toggle("view-about", view === "about");
+    LAYOUTS.forEach(function (l) { body.classList.toggle("layout-" + l, settings.layout === l); });
 
-    $("modeLabel").textContent = DISPLAY_LABEL[settings.display];
-    $("speedLabel").textContent = speedText();
     $("outSpeed").textContent = speedText();
     $("outInterval").textContent = settings.interval + "s";
     document.querySelectorAll("#tabbar [data-layout]").forEach(function (b) {
-      b.classList.toggle("active", b.dataset.layout === settings.layout);
+      var active = view === "about" ? b.dataset.layout === "about" : b.dataset.layout === settings.layout;
+      b.classList.toggle("active", active);
     });
     syncSettingsForm();
   }
 
   function setLayout(layout) {
-    if (layout === settings.layout) return;
-    var wasPlaying = playing;
-    stopPlay();
-    if (layout === "recite") {
-      settings.prevLayout = settings.layout;
-      pushOverlay("recite");
+    if (layout === "about") {
+      if (view === "about") return;
+      stopPlay();
+      view = "about";
+    } else {
+      if (view === "names" && layout === settings.layout) return;
+      var wasPlaying = playing;
+      stopPlay();
+      view = "names";
+      settings.layout = layout;
+      persist();
     }
-    settings.layout = layout;
-    persist();
     applyAppearance();
     render();
     content.scrollTop = 0;
-    if (layout === "recite" || wasPlaying) startPlay();
-    showReciteControls();
-  }
-
-  function exitRecite() {
-    if (settings.layout !== "recite") return;
-    setLayout(settings.prevLayout || "list");
+    if (wasPlaying) startPlay();
   }
 
   // ---------- Settings sheet ----------
@@ -459,20 +466,16 @@
     render();
   });
 
-  // ---------- Sheets & history (Android back button closes overlays) ----------
-  var overlays = [];
+  // ---------- Sheets & history (Android back button closes sheets) ----------
+  var openSheets = [];
   var scrim = $("scrim");
   var resumeAfterSheet = false;
 
-  function pushOverlay(id) {
-    overlays.push(id);
-    try { history.pushState({ overlay: id }, ""); } catch (e) {}
-  }
-
   function openSheet(sheet) {
     if (!sheet.hidden) return;
-    if (!overlays.some(isSheet)) { resumeAfterSheet = playing; stopPlay(); }
-    pushOverlay(sheet.id);
+    if (!openSheets.length) { resumeAfterSheet = playing; stopPlay(); }
+    openSheets.push(sheet.id);
+    try { history.pushState({ sheet: sheet.id }, ""); } catch (e) {}
     scrim.hidden = false;
     sheet.hidden = false;
     sheet.style.transform = "";
@@ -481,15 +484,13 @@
     });
   }
 
-  function isSheet(id) { return id !== "recite"; }
-
   function hideSheet(sheet) {
     sheet.classList.remove("open");
     sheet.style.transform = "";
-    if (!overlays.some(isSheet)) scrim.classList.remove("open");
+    if (!openSheets.length) scrim.classList.remove("open");
     setTimeout(function () {
       if (!sheet.classList.contains("open")) sheet.hidden = true;
-      if (!overlays.some(isSheet)) {
+      if (!openSheets.length) {
         scrim.hidden = true;
         if (resumeAfterSheet) { resumeAfterSheet = false; startPlay(); }
       }
@@ -497,13 +498,11 @@
   }
 
   // UI-initiated close goes through history so the back stack stays consistent.
-  function closeTop() { if (overlays.length) history.back(); }
+  function closeTop() { if (openSheets.length) history.back(); }
 
   window.addEventListener("popstate", function () {
-    var id = overlays.pop();
-    if (!id) return;
-    if (id === "recite") exitRecite();
-    else hideSheet($(id));
+    var id = openSheets.pop();
+    if (id) hideSheet($(id));
   });
 
   scrim.addEventListener("click", closeTop);
@@ -515,7 +514,7 @@
     sheet.addEventListener("touchstart", function (e) {
       var body = sheet.querySelector(".sheet-body");
       if (!e.target.closest(".sheet-handle, .sheet-head") && body.scrollTop > 0) return;
-      if (e.target.closest("input, button")) return;
+      if (e.target.closest("input, button, a")) return;
       startY = e.touches[0].clientY; dy = 0;
     }, { passive: true });
     sheet.addEventListener("touchmove", function (e) {
@@ -545,7 +544,10 @@
         '<div class="d-en">' + esc(n.en) + "</div>" +
         '<div class="d-tags"><span>' + THEMES[n.theme].icon + " " + esc(THEMES[n.theme].label) + "</span><span>" +
           JJK[n.jjk].icon + " " + esc(JJK[n.jjk].label) + "</span></div>" +
-        '<div class="d-benefit"><b>Benefit of reciting</b>' + esc(n.benefit) + "</div>" +
+        '<div class="d-block"><b>Explanation</b>' + esc(n.desc) + "</div>" +
+        (n.benefits.length ? '<div class="d-block"><b>Benefits</b>' + benefitsHTML(n) + "</div>" : "") +
+        (n.refs.length ? '<div class="d-block"><b>In the Qur\'an</b><div class="d-refs">' + n.refs.map(quranLink).join("") + "</div></div>" : "") +
+        (n.note ? '<div class="d-block d-note"><b>Note</b>' + esc(n.note) + "</div>" : "") +
         '<div class="d-actions">' +
           '<button class="icon-btn" data-act="prev" aria-label="Previous"' + (idx <= 0 ? " disabled style=\"opacity:.3\"" : "") + '><svg viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg></button>' +
           '<div class="mid">' +
@@ -555,6 +557,7 @@
           '<button class="icon-btn" data-act="next" aria-label="Next"' + (idx === -1 || idx >= list.length - 1 ? " disabled style=\"opacity:.3\"" : "") + '><svg viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg></button>' +
         "</div>" +
       "</div>";
+    $("detailBody").scrollTop = 0;
   }
 
   function openDetail(num) {
@@ -576,7 +579,7 @@
   });
 
   function shareName(n) {
-    var text = n.ar + "\n" + n.tr + " — " + n.en + "\n\n" + n.benefit;
+    var text = n.ar + "\n" + n.tr + " — " + n.en + "\n\n" + n.desc;
     if (navigator.share) {
       navigator.share({ title: n.tr, text: text }).catch(function () {});
     } else if (navigator.clipboard) {
@@ -620,12 +623,7 @@
   content.addEventListener("click", function (e) {
     var fav = e.target.closest(".fav");
     if (fav) { toggleFav(+fav.dataset.fav); return; }
-    if (settings.layout === "recite") {
-      if (body.classList.contains("controls-hidden")) showReciteControls();
-      else togglePlay();
-      return;
-    }
-    if (settings.layout === "cards") return;
+    if (view !== "names" || settings.layout === "cards") return;
     var item = e.target.closest(".name");
     if (item) openDetail(+item.dataset.n);
   });
@@ -635,16 +633,10 @@
     if (b) setLayout(b.dataset.layout);
   });
 
-  $("btnMode").addEventListener("click", function () {
-    var i = DISPLAY_ORDER.indexOf(settings.display);
-    setSetting("display", DISPLAY_ORDER[(i + 1) % DISPLAY_ORDER.length]);
-    toast("Showing: " + { name: "name only", meaning: "name & meaning", benefit: "meaning & benefits" }[settings.display]);
-  });
-
   $("btnSettings").addEventListener("click", function () { openSheet($("settingsSheet")); });
-  $("btnAbout").addEventListener("click", function () { openSheet($("aboutSheet")); });
 
   $("btnSearch").addEventListener("click", function () {
+    if (view === "about") setLayout(settings.layout);
     $("searchbar").hidden = false;
     $("searchInput").focus();
   });
@@ -661,23 +653,19 @@
   });
 
   $("btnPlay").addEventListener("click", togglePlay);
-  $("btnRecitePlay").addEventListener("click", function () { togglePlay(); showReciteControls(); });
-  $("btnExitRecite").addEventListener("click", closeTop);
-  $("btnSlower").addEventListener("click", function () { setSetting("speed", Math.max(10, settings.speed - 10)); showReciteControls(); });
-  $("btnFaster").addEventListener("click", function () { setSetting("speed", Math.min(200, settings.speed + 10)); showReciteControls(); });
   $("btnPrev").addEventListener("click", function () { goCard(cardIndex - 1); restartIfPlaying(); });
   $("btnNext").addEventListener("click", function () { goCard(cardIndex + 1); restartIfPlaying(); });
 
   document.addEventListener("keydown", function (e) {
     if (e.target.matches("input")) return;
-    if (e.key === " ") { e.preventDefault(); togglePlay(); showReciteControls(); }
+    if (e.key === " ") { e.preventDefault(); togglePlay(); }
     else if (e.key === "Escape") closeTop();
     else if (settings.layout === "cards" && e.key === "ArrowRight") goCard(cardIndex + 1);
     else if (settings.layout === "cards" && e.key === "ArrowLeft") goCard(cardIndex - 1);
   });
 
   window.addEventListener("resize", function () {
-    if (settings.layout === "cards") goCard(cardIndex, false);
+    if (view === "names" && settings.layout === "cards") goCard(cardIndex, false);
   });
 
   // ---------- Init ----------

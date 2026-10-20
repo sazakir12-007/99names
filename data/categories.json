@@ -1,0 +1,162 @@
+{
+  "themes": {
+    "mercy": {
+      "label": "Mercy & Love",
+      "icon": "♡"
+    },
+    "forgiveness": {
+      "label": "Forgiveness & Patience",
+      "icon": "❀"
+    },
+    "majesty": {
+      "label": "Majesty & Greatness",
+      "icon": "✦"
+    },
+    "power": {
+      "label": "Power & Decree",
+      "icon": "⚡︎"
+    },
+    "creation": {
+      "label": "Creation & Life",
+      "icon": "✿"
+    },
+    "knowledge": {
+      "label": "Knowledge & Wisdom",
+      "icon": "◉"
+    },
+    "provision": {
+      "label": "Provision & Generosity",
+      "icon": "❖"
+    },
+    "justice": {
+      "label": "Justice & Judgement",
+      "icon": "⚖︎"
+    },
+    "oneness": {
+      "label": "Oneness & Eternity",
+      "icon": "☾"
+    },
+    "guidance": {
+      "label": "Guidance & Protection",
+      "icon": "✧"
+    }
+  },
+  "jjk": {
+    "jalal": {
+      "label": "Jalal · Majesty",
+      "icon": "▲",
+      "desc": "Names of awe, might and majesty."
+    },
+    "jamal": {
+      "label": "Jamal · Beauty",
+      "icon": "●",
+      "desc": "Names of mercy, gentleness and generosity."
+    },
+    "kamal": {
+      "label": "Kamal · Perfection",
+      "icon": "◆",
+      "desc": "Names of perfect essence, knowledge and eternity."
+    }
+  },
+  "names": {
+    "1": { "theme": "mercy", "jjk": "jamal" },
+    "2": { "theme": "mercy", "jjk": "jamal" },
+    "3": { "theme": "majesty", "jjk": "jalal" },
+    "4": { "theme": "majesty", "jjk": "kamal" },
+    "5": { "theme": "mercy", "jjk": "jamal" },
+    "6": { "theme": "guidance", "jjk": "jamal" },
+    "7": { "theme": "guidance", "jjk": "jalal" },
+    "8": { "theme": "majesty", "jjk": "jalal" },
+    "9": { "theme": "power", "jjk": "jalal" },
+    "10": { "theme": "majesty", "jjk": "jalal" },
+    "11": { "theme": "creation", "jjk": "kamal" },
+    "12": { "theme": "creation", "jjk": "kamal" },
+    "13": { "theme": "creation", "jjk": "kamal" },
+    "14": { "theme": "forgiveness", "jjk": "jamal" },
+    "15": { "theme": "power", "jjk": "jalal" },
+    "16": { "theme": "provision", "jjk": "jamal" },
+    "17": { "theme": "provision", "jjk": "jamal" },
+    "18": { "theme": "provision", "jjk": "jamal" },
+    "19": { "theme": "knowledge", "jjk": "kamal" },
+    "20": { "theme": "power", "jjk": "jalal" },
+    "21": { "theme": "provision", "jjk": "jamal" },
+    "22": { "theme": "power", "jjk": "jalal" },
+    "23": { "theme": "power", "jjk": "jamal" },
+    "24": { "theme": "power", "jjk": "jamal" },
+    "25": { "theme": "power", "jjk": "jalal" },
+    "26": { "theme": "knowledge", "jjk": "kamal" },
+    "27": { "theme": "knowledge", "jjk": "kamal" },
+    "28": { "theme": "justice", "jjk": "kamal" },
+    "29": { "theme": "justice", "jjk": "kamal" },
+    "30": { "theme": "mercy", "jjk": "jamal" },
+    "31": { "theme": "knowledge", "jjk": "kamal" },
+    "32": { "theme": "forgiveness", "jjk": "jamal" },
+    "33": { "theme": "majesty", "jjk": "jalal" },
+    "34": { "theme": "forgiveness", "jjk": "jamal" },
+    "35": { "theme": "mercy", "jjk": "jamal" },
+    "36": { "theme": "majesty", "jjk": "kamal" },
+    "37": { "theme": "majesty", "jjk": "jalal" },
+    "38": { "theme": "guidance", "jjk": "jamal" },
+    "39": { "theme": "provision", "jjk": "jamal" },
+    "40": { "theme": "justice", "jjk": "kamal" },
+    "41": { "theme": "majesty", "jjk": "jalal" },
+    "42": { "theme": "provision", "jjk": "jamal" },
+    "43": { "theme": "guidance", "jjk": "kamal" },
+    "44": { "theme": "mercy", "jjk": "jamal" },
+    "45": { "theme": "provision", "jjk": "jamal" },
+    "46": { "theme": "knowledge", "jjk": "kamal" },
+    "47": { "theme": "mercy", "jjk": "jamal" },
+    "48": { "theme": "majesty", "jjk": "jamal" },
+    "49": { "theme": "creation", "jjk": "jalal" },
+    "50": { "theme": "knowledge", "jjk": "kamal" },
+    "51": { "theme": "oneness", "jjk": "kamal" },
+    "52": { "theme": "guidance", "jjk": "jamal" },
+    "53": { "theme": "power", "jjk": "jalal" },
+    "54": { "theme": "power", "jjk": "jalal" },
+    "55": { "theme": "guidance", "jjk": "jamal" },
+    "56": { "theme": "mercy", "jjk": "kamal" },
+    "57": { "theme": "knowledge", "jjk": "kamal" },
+    "58": { "theme": "creation", "jjk": "kamal" },
+    "59": { "theme": "creation", "jjk": "kamal" },
+    "60": { "theme": "creation", "jjk": "jamal" },
+    "61": { "theme": "creation", "jjk": "jalal" },
+    "62": { "theme": "oneness", "jjk": "kamal" },
+    "63": { "theme": "oneness", "jjk": "kamal" },
+    "64": { "theme": "provision", "jjk": "kamal" },
+    "65": { "theme": "majesty", "jjk": "jamal" },
+    "66": { "theme": "oneness", "jjk": "kamal" },
+    "67": { "theme": "oneness", "jjk": "kamal" },
+    "68": { "theme": "oneness", "jjk": "kamal" },
+    "69": { "theme": "power", "jjk": "jalal" },
+    "70": { "theme": "power", "jjk": "jalal" },
+    "71": { "theme": "power", "jjk": "jalal" },
+    "72": { "theme": "power", "jjk": "jalal" },
+    "73": { "theme": "oneness", "jjk": "kamal" },
+    "74": { "theme": "oneness", "jjk": "kamal" },
+    "75": { "theme": "knowledge", "jjk": "kamal" },
+    "76": { "theme": "knowledge", "jjk": "kamal" },
+    "77": { "theme": "majesty", "jjk": "jalal" },
+    "78": { "theme": "majesty", "jjk": "jalal" },
+    "79": { "theme": "mercy", "jjk": "jamal" },
+    "80": { "theme": "forgiveness", "jjk": "jamal" },
+    "81": { "theme": "justice", "jjk": "jalal" },
+    "82": { "theme": "forgiveness", "jjk": "jamal" },
+    "83": { "theme": "mercy", "jjk": "jamal" },
+    "84": { "theme": "majesty", "jjk": "jalal" },
+    "85": { "theme": "majesty", "jjk": "kamal" },
+    "86": { "theme": "justice", "jjk": "kamal" },
+    "87": { "theme": "creation", "jjk": "kamal" },
+    "88": { "theme": "provision", "jjk": "kamal" },
+    "89": { "theme": "provision", "jjk": "jamal" },
+    "90": { "theme": "power", "jjk": "jalal" },
+    "91": { "theme": "power", "jjk": "jalal" },
+    "92": { "theme": "power", "jjk": "jamal" },
+    "93": { "theme": "guidance", "jjk": "jamal" },
+    "94": { "theme": "guidance", "jjk": "jamal" },
+    "95": { "theme": "creation", "jjk": "kamal" },
+    "96": { "theme": "oneness", "jjk": "kamal" },
+    "97": { "theme": "oneness", "jjk": "kamal" },
+    "98": { "theme": "guidance", "jjk": "jamal" },
+    "99": { "theme": "forgiveness", "jjk": "jamal" }
+  }
+}

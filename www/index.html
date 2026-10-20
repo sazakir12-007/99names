@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Asma ul-Husna · 99 Names</title>
-  <meta name="description" content="The 99 Beautiful Names of Allah with meanings, benefits of recitation, categories, themes and auto scroll.">
+  <title>Asma ul Husna</title>
+  <meta name="description" content="The 99 Beautiful Names of Allah with meanings, explanations, Qur'an references, authentic benefits, categories and themes.">
   <meta name="theme-color" content="#1b1e28">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="99 Names">
+  <meta name="apple-mobile-web-app-title" content="Asma ul Husna">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/favicon-48.png" type="image/png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -28,11 +28,8 @@
     <header class="appbar">
       <div class="brand">
         <span class="brand-ar" lang="ar" dir="rtl">الأسماء الحسنى</span>
-        <span class="brand-en">99 Names of Allah</span>
+        <span class="brand-en">Asma ul Husna</span>
       </div>
-      <button class="mode-pill" id="btnMode" aria-label="Change what is shown">
-        <span id="modeLabel">Meaning</span>
-      </button>
       <button class="icon-btn" id="btnSearch" aria-label="Search">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       </button>
@@ -75,31 +72,11 @@
       <button data-layout="cards">
         <svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M3 6v12M21 6v12"/></svg><span>Cards</span>
       </button>
-      <button data-layout="recite">
-        <svg viewBox="0 0 24 24"><path d="M4 4h6v6M20 4h-6v6M4 20h6v-6M20 20h-6v-6"/></svg><span>Recite</span>
-      </button>
-      <button id="btnAbout">
+      <button data-layout="about">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span>About</span>
       </button>
     </nav>
 
-    <!-- Floating controls shown in Recite (fullscreen) layout -->
-    <div class="recite-bar" id="reciteBar">
-      <button class="icon-btn" id="btnExitRecite" aria-label="Exit recitation">
-        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
-      </button>
-      <button class="icon-btn" id="btnSlower" aria-label="Slower">
-        <svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg>
-      </button>
-      <span id="speedLabel">40</span>
-      <button class="icon-btn" id="btnFaster" aria-label="Faster">
-        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg>
-      </button>
-      <button class="icon-btn" id="btnRecitePlay" aria-label="Play or pause">
-        <svg class="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        <svg class="i-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
-      </button>
-    </div>
   </div>
 
   <div class="scrim" id="scrim" hidden></div>
@@ -122,7 +99,7 @@
       <div class="segmented" data-setting="display">
         <button data-value="name">Name only</button>
         <button data-value="meaning">+ Meaning</button>
-        <button data-value="benefit">+ Benefits</button>
+        <button data-value="details">+ Details</button>
       </div>
       <label class="row"><span>Arabic script</span><input type="checkbox" class="switch" data-setting="showArabic"></label>
       <label class="row"><span>Transliteration</span><input type="checkbox" class="switch" data-setting="showTranslit"></label>
@@ -158,25 +135,6 @@
       <label class="row"><span>Keep screen awake while playing</span><input type="checkbox" class="switch" data-setting="wakeLock"></label>
 
       <button class="danger-btn" id="btnReset">Reset all settings</button>
-    </div>
-  </section>
-
-  <!-- About sheet -->
-  <section class="sheet" id="aboutSheet" role="dialog" aria-modal="true" aria-label="About" hidden>
-    <div class="sheet-handle"></div>
-    <div class="sheet-head">
-      <h2>About</h2>
-      <button class="text-btn" data-close>Done</button>
-    </div>
-    <div class="sheet-body prose">
-      <p class="ayah" lang="ar" dir="rtl">وَلِلَّهِ الْأَسْمَاءُ الْحُسْنَىٰ فَادْعُوهُ بِهَا</p>
-      <p class="ayah-en">“To Allah belong the most beautiful names, so call upon Him by them.” (al-A'raf 7:180)</p>
-      <p>The Prophet ﷺ said: “Allah has ninety-nine names, one hundred less one. Whoever preserves them will enter Paradise.” (al-Bukhari, Muslim)</p>
-      <h3>About the benefits</h3>
-      <p>The benefits of recitation listed in this app come from traditional devotional literature passed down by scholars and teachers. Except where a hadith is cited, they are not established by authentic hadith. Recite with sincerity, and ask a qualified scholar for guidance.</p>
-      <h3>About the classifications</h3>
-      <p>The thematic categories group names by meaning to help with reflection. The Jalal (majesty), Jamal (beauty) and Kamal (perfection) grouping follows a traditional approach; scholars differ on where some names belong.</p>
-      <p class="muted">Fonts: Amiri, Scheherazade New, Noto Naskh Arabic, Lateef, Reem Kufi, Aref Ruqaa, Inter and Lora, all under the SIL Open Font License.</p>
     </div>
   </section>
 
