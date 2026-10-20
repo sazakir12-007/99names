@@ -1,5 +1,5 @@
 // Offline-first service worker. Bump VERSION whenever app files change.
-const VERSION = "v1";
+const VERSION = "v2";
 const CACHE = "99names-" + VERSION;
 const ASSETS = [
   "./",
@@ -8,7 +8,7 @@ const ASSETS = [
   "css/app.css",
   "js/names.js",
   "js/app.js",
-  "icons/icon.svg",
+  "icons/favicon-48.png",
   "icons/icon-192.png",
   "icons/icon-512.png",
   "icons/apple-touch-icon.png",
