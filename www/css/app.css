@@ -365,6 +365,11 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .prose { line-height: 1.6; max-width: 40em; margin: 0 auto; padding-bottom: 24px; }
 .prose h2 { font-size: 1.15em; text-align: center; margin: 18px 0 4px; }
 .prose h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--gold); margin: 24px 0 8px; }
+.share-app {
+  display: flex; align-items: center; justify-content: center; gap: 8px; margin: 14px auto 0; padding: 10px 18px;
+  border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 15px;
+}
+.share-app svg { width: 20px; height: 20px; }
 .prose blockquote { margin: 0 0 10px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--gold); border-radius: 12px; }
 body.view-about .chips, body.view-about .searchbar, body.view-about .fab, body.view-about .cards-nav { display: none !important; }
 .prose .ayah { font-family: var(--font-ar); font-size: 30px; text-align: center; color: var(--accent); margin: 10px 0 0; line-height: 1.8; }
