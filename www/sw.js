@@ -1,5 +1,5 @@
-// Offline-first service worker. Bump VERSION whenever app files change.
-const VERSION = "v5";
+// Offline-first service worker. Bump VERSION whenever the ASSETS list changes.
+const VERSION = "v6";
 const CACHE = "99names-" + VERSION;
 const ASSETS = [
   "./",
@@ -11,6 +11,7 @@ const ASSETS = [
   "icons/favicon-48.png",
   "icons/icon-192.png",
   "icons/icon-512.png",
+  "icons/icon-maskable-512.png",
   "icons/apple-touch-icon.png",
   "fonts/amiri-arabic-400-normal.woff2",
   "fonts/amiri-arabic-700-normal.woff2",
@@ -25,8 +26,13 @@ const ASSETS = [
   "fonts/lora-latin-600-normal.woff2"
 ];
 
+// Cache each file on its own so one failed download cannot stop the app working offline.
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  e.waitUntil(
+    caches.open(CACHE)
+      .then((c) => Promise.all(ASSETS.map((url) => c.add(new Request(url, { cache: "reload" })).catch(() => {}))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener("activate", (e) => {
@@ -37,17 +43,27 @@ self.addEventListener("activate", (e) => {
   );
 });
 
+// Stale-while-revalidate: answer from the cache at once (works offline) and refresh the
+// cached copy in the background, so the next launch picks up any update.
 self.addEventListener("fetch", (e) => {
-  if (e.request.method !== "GET") return;
+  const req = e.request;
+  if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
+  const key = req.mode === "navigate" ? "index.html" : req;
+
   e.respondWith(
-    caches.match(e.request, { ignoreSearch: true }).then((hit) =>
-      hit || fetch(e.request).then((res) => {
-        if (res.ok && new URL(e.request.url).origin === location.origin) {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(e.request, copy));
+    caches.open(CACHE).then((cache) =>
+      cache.match(key, { ignoreSearch: true }).then((hit) => {
+        const fresh = fetch(req).then((res) => {
+          // A redirected response cannot be replayed for a page load, so never cache one.
+          if (res.ok && !res.redirected) cache.put(key, res.clone());
+          return res;
+        });
+        if (hit) {
+          e.waitUntil(fresh.catch(() => {}));
+          return hit;
         }
-        return res;
-      }).catch(() => caches.match("index.html"))
+        return fresh.catch(() => cache.match("index.html"));
+      })
     )
   );
 });

@@ -270,8 +270,7 @@
     var t = track();
     if (!t) return;
     var count = cardCount();
-    if (i >= count) i = 0;
-    if (i < 0) i = 0;
+    i = Math.max(0, Math.min(i, count - 1));
     cardIndex = i;
     t.scrollTo({ left: i * t.clientWidth, behavior: smooth === false ? "auto" : "smooth" });
     updateCounter();
@@ -284,9 +283,15 @@
     if (playing || view !== "names") return;
     playing = true;
     body.classList.add("playing");
+    // Auto scroll stops at the end; pressing play there starts again from the beginning.
     if (settings.layout === "cards") {
-      cardTimer = setInterval(function () { goCard(cardIndex + 1); }, settings.interval * 1000);
+      if (cardIndex >= cardCount() - 1) goCard(0, false);
+      cardTimer = setInterval(function () {
+        goCard(cardIndex + 1);
+        if (cardIndex >= cardCount() - 1) stopPlay();
+      }, settings.interval * 1000);
     } else {
+      if (content.scrollTop >= content.scrollHeight - content.clientHeight - 1) content.scrollTop = 0;
       pos = content.scrollTop;
       lastT = null;
       rafId = requestAnimationFrame(step);
@@ -313,7 +318,7 @@
       var dt = Math.min((t - lastT) / 1000, 0.1);
       var max = content.scrollHeight - content.clientHeight;
       pos += settings.speed * dt;
-      if (pos >= max) pos = 0;   // start again from the top
+      if (pos >= max) { content.scrollTop = max; stopPlay(); return; }
       content.scrollTop = pos;
     }
     lastT = t;
